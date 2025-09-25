@@ -1998,8 +1998,22 @@
         }
 
         // 初期化
-        window.onload = function() {
-            initializeApp();
+       window.onload = function() {
+    initializeApp();
+    
+    // 投稿ページの場合
+    if (document.getElementById('postForm')) {
+        initPostPage(); // カテゴリや報酬表示の初期化
+        
+        // ボタンにイベントを追加
+        const payButton = document.getElementById('payButton');
+        payButton.addEventListener('click', initiatePayPay);
+    }
+    
+    // タイマー監視など既存処理
+    setInterval(() => { ... });
+}
+
             
             // タイマー監視
             setInterval(() => {
