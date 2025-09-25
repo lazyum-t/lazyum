@@ -1896,18 +1896,17 @@
 
                 const result = await response.json();
 
-                if (response.ok && result.success && result.result && result.result.data && result.result.data.webLink) {
-                    // 成功: PayPayの決済画面URLを取得し、リダイレクト
-                    paymentMessage.textContent = 'PayPay決済画面へ移動します...';
-                    window.location.href = result.result.data.webLink;
-                } else {
-                    // 失敗: エラーメッセージを表示
-                    const errorMsg = result.result?.resultInfo?.message || result.message || '不明なエラー';
-                    paymentMessage.textContent = `決済作成に失敗しました: ${errorMsg}`;
-                    paymentMessage.style.color = 'red';
-                    console.error('Payment creation failed:', result);
-                    payButton.disabled = false; // エラー時はボタンを再有効化
-                }
+                if (response.ok && result.success && result.paymentUrl) {
+    paymentMessage.textContent = 'PayPay決済画面へ移動します...';
+    window.location.href = result.paymentUrl;
+} else {
+    const errorMsg = result.message || '不明なエラー';
+    paymentMessage.textContent = `決済作成に失敗しました: ${errorMsg}`;
+    paymentMessage.style.color = 'red';
+    console.error('Payment creation failed:', result);
+    payButton.disabled = false;
+}
+
             } catch (error) {
                 paymentMessage.textContent = 'サーバーとの通信に失敗しました。ネットワーク接続を確認してください。';
                 paymentMessage.style.color = 'red';
