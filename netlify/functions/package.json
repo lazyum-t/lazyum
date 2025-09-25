@@ -1,0 +1,16 @@
+{
+  "name": "lazyum-paypay",
+  "version": "1.0.0",
+  "description": "Netlify FunctionsでPayPay決済サンプル",
+  "main": "index.js",
+  "scripts": {
+    "start": "netlify dev"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module" 
+}

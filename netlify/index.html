@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lazyum - 知識マーケットプレイス</title>
+    
+    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <style>
+        .logo-image {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF4458;
+            --secondary: #667eea;
+            --accent: #764ba2;
+            --bg: #f5f5f5;
+            --text: #333;
+            --border: #ddd;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --success: #28a745;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* 共通スタイル */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e63946;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: black;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .textarea-field {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            font-size: 14px;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        /* フローティングボタン */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+            box-shadow: 0 4px 12px rgba(255, 68, 88, 0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            z-index: 90;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 68, 88, 0.5);
+        }
+
+        /* カード */
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            position: relative;
+        }
+
+        .card-content {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .genre-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-open {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-reserved {
+            background: var(--warning);
+            color: black;
+        }
+
+        .status-solved {
+            background: #6c757d;
+            color: white;
+        }
+
+        .deadline-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        /* グリッド */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        /* 画像アップロード */
+        .image-upload {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary);
+            background: rgba(255, 68, 88, 0.05);
+        }
+
+        .image-preview {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .image-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .image-preview .remove-image {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* タイマー */
+        .timer {
+            display: inline-block;
+            padding: 5px 10px;
+            background: var(--warning);
+            color: black;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        /* PayPay決済ボタン */
+        .paypay-btn {
+            background: #ff0033;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .paypay-btn:hover {
+            background: #e60030;
+        }
+
+        /* 画像モーダル */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+        }
+
+        .image-modal.show {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        .image-modal-close:hover {
+            color: #f1f1f1;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+            }
+
+            .search-container {
+                order: 3;
+                flex: 1 1 100%;
+                margin-top: 15px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+        <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+        <img id="modalImage" src="" alt="拡大画像">
+    </div>
+
+    <div id="answerModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px;">回答を提出</h2>
+            <form onsubmit="handleAnswerSubmit(event)">
+                <div class="input-group">
+                    <label class="input-label">写真（任意）</label>
+                    <div class="image-upload" onclick="document.getElementById('answerImageInput').click()">
+                        <div style="font-size: 48px; margin-bottom: 10px;">📷</div>
+                        <p>クリックして画像を選択</p>
+                        <input type="file" id="answerImageInput" accept="image/*" multiple style="display: none;" onchange="handleAnswerImageSelect(event)">
+                    </div>
+                    <div id="answerImagePreview" class="image-preview"></div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">回答説明</label>
+                    <textarea id="answerDescription" class="textarea-field" placeholder="回答の詳細を記入してください"></textarea>
+                </div>
+                
+                <p style="color: var(--danger); margin-bottom: 20px;">※ 写真または説明文の少なくとも1つは必須です</p>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="closeAnswerModal()" class="btn btn-secondary">キャンセル</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">回答を提出</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // アプリケーションのグローバル状態
+        const app = {
+            currentUser: null,
+            currentPage: '',
+            questions: [],
+            displayedQuestions: 100,
+            searchTerm: '',
+            selectedImages: [],
+            answerImages: [],
+            currentAnsweringQuestion: null,
+            answerTimers: {},
+            penalties: {},
+            showOnlyOpen: false,
+            viewedAnswers: JSON.parse(localStorage.getItem('lazyum_viewed_answers') || '[]')
+        };
+
+        // データベース（LocalStorage）
+        const db = {
+            users: JSON.parse(localStorage.getItem('lazyum_users') || '[]'),
+            questions: JSON.parse(localStorage.getItem('lazyum_questions') || '[]'),
+            penalties: JSON.parse(localStorage.getItem('lazyum_penalties') || '{}'),
+            blockedQuestions: JSON.parse(localStorage.getItem('lazyum_blocked_questions') || '{}'),
+            
+            saveUsers() {
+                localStorage.setItem('lazyum_users', JSON.stringify(this.users));
+            },
+            
+            saveQuestions() {
+                localStorage.setItem('lazyum_questions', JSON.stringify(this.questions));
+            },
+            
+            savePenalties() {
+                localStorage.setItem('lazyum_penalties', JSON.stringify(this.penalties));
+            },
+            
+            saveBlockedQuestions() {
+                localStorage.setItem('lazyum_blocked_questions', JSON.stringify(this.blockedQuestions));
+            },
+            
+            saveCurrentUser(user) {
+                if (user) {
+                    localStorage.setItem('lazyum_current_user', JSON.stringify(user));
+                } else {
+                    localStorage.removeItem('lazyum_current_user');
+                }
+            },
+            
+            getCurrentUser() {
+                const user = localStorage.getItem('lazyum_current_user');
+                return user ? JSON.parse(user) : null;
+            }
+        };
+
+        // ペナルティ管理
+        const penaltyManager = {
+            checkPenalty(userId) {
+                const penalty = db.penalties[userId];
+                if (!penalty) return { canAnswer: true };
+                
+                // アカウント凍結チェック
+                if (penalty.frozenCount >= 3) {
+                    return { canAnswer: false, reason: 'アカウントが永久凍結されています' };
+                }
+                
+                // 一時停止チェック
+                if (penalty.suspendedUntil && new Date(penalty.suspendedUntil) > new Date()) {
+                    const remainingTime = new Date(penalty.suspendedUntil) - new Date();
+                    const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+                    return { canAnswer: false, reason: `回答停止中（残り${days}日）` };
+                }
+                
+                return { canAnswer: true };
+            },
+            
+            addFailure(userId) {
+                if (!db.penalties[userId]) {
+                    db.penalties[userId] = {
+                        failures: [],
+                        suspendedUntil: null,
+                        suspendedCount: 0,
+                        frozenCount: 0
+                    };
+                }
+                
+                const penalty = db.penalties[userId];
+                const now = new Date();
+                
+                // 1週間以内の失敗をカウント
+                penalty.failures.push(now.toISOString());
+                const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+                penalty.failures = penalty.failures.filter(f => new Date(f) > oneWeekAgo);
+                
+                // 5回以上の失敗で1週間停止
+                if (penalty.failures.length >= 5) {
+                    penalty.suspendedUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+                    penalty.suspendedCount++;
+                    penalty.failures = [];
+                    
+                    // 3回停止でアカウント凍結
+                    if (penalty.suspendedCount >= 3) {
+                        penalty.frozenCount = 3;
+                        alert('アカウントが永久凍結されました。');
+                    } else {
+                        alert(`1週間の回答停止処分となりました（${penalty.suspendedCount}回目）`);
+                    }
+                }
+                
+                db.savePenalties();
+            }
+        };
+
+        // タイマー管理
+        const timerManager = {
+            startTimer(questionId, userId, duration = 2 * 60 * 60 * 1000) {
+                const endTime = new Date().getTime() + duration;
+                app.answerTimers[questionId] = {
+                    userId: userId,
+                    endTime: endTime,
+                    canCancel: new Date().getTime() + 15 * 60 * 1000 // 15分間キャンセル可能
+                };
+                
+                // タイマー監視
+                const interval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const timer = app.answerTimers[questionId];
+                    
+                    if (!timer || now > timer.endTime) {
+                        clearInterval(interval);
+                        if (timer && timer.userId === userId) {
+                            this.handleTimeout(questionId, userId);
+                        }
+                    }
+                }, 1000);
+            },
+            
+            handleTimeout(questionId, userId) {
+                const question = db.questions.find(q => q.id === questionId);
+                if (question && question.status === 'reserved' && question.answeredBy === userId) {
+                    question.status = 'open';
+                    question.answeredBy = null;
+                    delete app.answerTimers[questionId];
+                    db.saveQuestions();
+                    
+                    // ペナルティ追加
+                    penaltyManager.addFailure(userId);
+                    
+                    if (app.currentPage === 'question' && app.currentQuestion?.id === questionId) {
+                        router.render('question', questionId);
+                    }
+                }
+            },
+            
+            canCancelAnswer(questionId) {
+                const timer = app.answerTimers[questionId];
+                if (!timer) return false;
+                return new Date().getTime() < timer.canCancel;
+            },
+            
+            cancelAnswer(questionId, userId) {
+                const question = db.questions.find(q => q.id === questionId);
+                if (question && this.canCancelAnswer(questionId)) {
+                    question.status = 'open';
+                    question.answeredBy = null;
+                    delete app.answerTimers[questionId];
+                    
+                    // この問題をブロック
+                    if (!db.blockedQuestions[userId]) {
+                        db.blockedQuestions[userId] = [];
+                    }
+                    db.blockedQuestions[userId].push(questionId);
+                    
+                    db.saveQuestions();
+                    db.saveBlockedQuestions();
+                    
+                    alert('回答を停止しました。この問題には再度回答できません。');
+                    router.navigate('home');
+                }
+            },
+            
+            getRemainingTime(questionId) {
+                const timer = app.answerTimers[questionId];
+                if (!timer) return null;
+                
+                const now = new Date().getTime();
+                const remaining = timer.endTime - now;
+                
+                if (remaining <= 0) return '時間切れ';
+                
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                
+                return `${hours}時間${minutes}分${seconds}秒`;
+            }
+        };
+
+        // ページコンポーネント
+        const pages = {
+            // ログインページ
+            login: () => `
+                <div style="min-height: 100vh; background: linear-gradient(135deg, var(--secondary), var(--accent)); display: flex; align-items: center; justify-content: center; padding: 20px;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">😴</div>
+                            <h1 style="font-size: 32px; color: var(--primary); margin-bottom: 10px;">lazyum</h1>
+                            <p style="color: #666;">知識マーケットプレイス</p>
+                        </div>
+                        
+                        <form onsubmit="handleLogin(event)">
+                            <div class="input-group">
+                                <input type="email" id="loginEmail" class="input-field" placeholder="メールアドレス" required>
+                            </div>
+                            <div class="input-group">
+                                <input type="password" id="loginPassword" class="input-field" placeholder="パスワード" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">ログイン</button>
+                        </form>
+                        
+                        <div style="margin: 20px 0; text-align: center; position: relative;">
+                            <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
+                            <span style="background: white; padding: 0 10px; position: relative; top: -30px; color: #999;">または</span>
+                        </div>
+                        
+                        <div id="googleSignInButton" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
+                        
+                        <button onclick="router.navigate('signup')" class="btn btn-secondary btn-block">新規登録</button>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; color: #856404; font-size: 14px;">
+                            <strong>テストアカウント</strong><br>
+                            メール: test@test.com<br>
+                            パスワード: password
+                        </div>
+                    </div>
+                </div>
+            `,
+
+            // 新規登録ページ
+            signup: () => `
+                <div style="min-height: 100vh; background: linear-gradient(135deg, var(--secondary), var(--accent)); display: flex; align-items: center; justify-content: center; padding: 20px;">
+                    <div style="background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">😴</div>
+                            <h1 style="font-size: 32px; color: var(--primary); margin-bottom: 10px;">新規登録</h1>
+                            <p style="color: #666;">アカウントを作成</p>
+                        </div>
+                        
+                        <form onsubmit="handleSignup(event)">
+                            <div class="input-group">
+                                <label class="input-label">名前</label>
+                                <input type="text" id="signupName" class="input-field" placeholder="表示名" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">メールアドレス</label>
+                                <input type="email" id="signupEmail" class="input-field" placeholder="example@email.com" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">パスワード</label>
+                                <input type="password" id="signupPassword" class="input-field" placeholder="8文字以上" minlength="8" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">登録する</button>
+                        </form>
+                        
+                        <div style="text-align: center; margin-top: 20px; color: #666;">
+                            すでにアカウントをお持ちの方は
+                            <a href="#" onclick="router.navigate('login'); return false;" style="color: var(--primary); text-decoration: none;">ログイン</a>
+                        </div>
+                    </div>
+                </div>
+            `,
+
+            // ホームページ
+            home: () => {
+                const questions = getFilteredQuestions();
+                const displayQuestions = questions.slice(0, app.displayedQuestions);
+                
+                // 期限切れ質問の削除
+                checkAndRemoveExpiredQuestions();
+                
+                // 新着回答チェック
+                const newAnswers = checkNewAnswers();
+                
+                return `
+                    <div>
+                        ${header()}
+                        
+                        ${app.currentUser && checkAccountStatus()}
+                        
+                        ${newAnswers.length > 0 ? `
+                            <div class="container" style="margin-top: 20px;">
+                                <div class="alert alert-success" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>📬 回答が返ってきました！（${newAnswers.length}件）</span>
+                                    <button onclick="viewNewAnswers()" class="btn btn-primary" style="padding: 8px 16px;">回答を確認する</button>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="container" style="padding: 30px 20px;">
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <input type="checkbox" id="showOnlyOpen" onchange="toggleOnlyOpen()" ${app.showOnlyOpen ? 'checked' : ''}>
+                                    <span>募集中のみ表示</span>
+                                </label>
+                            </div>
+                            
+                            ${displayQuestions.length === 0 ? `
+                                <div style="text-align: center; padding: 60px 20px; color: #999;">
+                                    <div style="font-size: 64px; margin-bottom: 20px;">🔭</div>
+                                    <h2 style="font-size: 24px; margin-bottom: 10px;">まだ質問がありません</h2>
+                                    <p>最初の質問を投稿してみましょう！</p>
+                                </div>
+                            ` : `
+                                <div class="grid">
+                                    ${displayQuestions.map(q => questionCard(q)).join('')}
+                                </div>
+                                
+                                ${questions.length > app.displayedQuestions ? `
+                                    <div style="text-align: center; margin: 40px 0;">
+                                        <button onclick="loadMoreQuestions()" class="btn btn-secondary">
+                                            さらに見る（残り${questions.length - app.displayedQuestions}件）
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            `}
+                        </div>
+                        
+                        <a href="#" onclick="router.navigate('post'); return false;" class="fab">+</a>
+                    </div>
+                `;
+            },
+
+            // 投稿ページ
+            post: () => `
+                <div>
+                    ${header()}
+                    <div class="container" style="padding: 30px 20px; max-width: 800px;">
+                        <div class="card" style="padding: 30px;">
+                            <h1 style="margin-bottom: 30px;">質問を投稿</h1>
+                            <form id="postForm" onsubmit="handlePost(event)">
+                                <div class="input-group">
+                                    <label class="input-label">写真（最大5枚）</label>
+                                    <div class="image-upload" onclick="document.getElementById('imageInput').click()">
+                                        <div style="font-size: 48px; margin-bottom: 10px;">📷</div>
+                                        <p>クリックして画像を選択</p>
+                                        <input type="file" id="imageInput" accept="image/*" multiple style="display: none;" onchange="handleImageSelect(event)">
+                                    </div>
+                                    <div id="imagePreview" class="image-preview"></div>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">タイトル *</label>
+                                    <input type="text" id="postTitle" class="input-field" placeholder="質問のタイトル" required oninput="checkFormCompletion()">
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">説明文 *</label>
+                                    <textarea id="postDescription" class="textarea-field" placeholder="詳しい説明を記入してください" required oninput="checkFormCompletion()"></textarea>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">カテゴリー *</label>
+                                    <select id="postCategory" class="input-field" required onchange="updateSubCategory(); checkFormCompletion();">
+                                        <option value="">選択してください</option>
+                                        <option value="社会人">社会人</option>
+                                        <option value="大学生">大学生</option>
+                                        <option value="高校生">高校生</option>
+                                        <option value="中学生">中学生</option>
+                                        <option value="小学生">小学生</option>
+                                        <option value="その他">その他</option>
+                                    </select>
+                                </div>
+                                <div id="subCategoryGroup" class="input-group" style="display: none;">
+                                    <label class="input-label">サブカテゴリー *</label>
+                                    <select id="postSubCategory" class="input-field" onchange="updateDetailCategory(); checkFormCompletion();">
+                                        <option value="">選択してください</option>
+                                    </select>
+                                </div>
+                                <div id="detailCategoryGroup" class="input-group" style="display: none;">
+                                    <label class="input-label">詳細カテゴリー *</label>
+                                    <select id="postDetailCategory" class="input-field" onchange="checkFormCompletion()">
+                                        <option value="">選択してください</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">単価（円） *</label>
+                                    <input type="number" id="postPrice" class="input-field" placeholder="500" min="100" step="100" required oninput="checkFormCompletion()">
+                                    <small style="color: #666; display: block; margin-top: 5px;"> ※ 手数料10%（システム利用料） </small>
+                                    <div id="rewardDisplay" style="margin-top: 10px; padding: 10px; background: #e8f5e9; border-radius: 8px; color: #2e7d32; font-size: 14px; display: none;"></div>
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">募集期限（任意）</label>
+                                    <input type="datetime-local" id="postDeadline" class="input-field">
+                                    <small style="color: #666; display: block; margin-top: 5px;"> 期限を過ぎると自動的に削除されます </small>
+                                </div>
+                                <div id="incompleteWarning" class="alert alert-warning" style="display: none;"> 入力が必要な項目があります </div>
+                                <div id="paymentMessage" style="margin-top: 10px; text-align: center;"></div>
+                                <button type="button" id="payButton" onclick="initiatePayPay()" class="paypay-btn" disabled>
+                                    <span>💳</span> <span>PayPayで支払いして投稿</span>
+                                </button>
+                                <button type="button" onclick="router.navigate('home')" class="btn btn-secondary btn-block" style="margin-top: 10px;">キャンセル</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `,
+
+            // 回答完了ページ
+            answerComplete: (data) => {
+                const reward = data ? Math.floor(data.price * 0.9) : 0;
+                return `
+                    <div style="min-height: 100vh; background: linear-gradient(135deg, var(--secondary), var(--accent)); display: flex; align-items: center; justify-content: center; padding: 20px;">
+                        <div style="background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
+                            <h1 style="font-size: 28px; color: var(--primary); margin-bottom: 20px;">回答が完了しました</h1>
+                            <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; margin: 30px 0;">
+                                <p style="font-size: 18px; color: #666; margin-bottom: 15px;">報酬</p>
+                                <p style="font-size: 36px; font-weight: bold; color: var(--primary);"> ¥${reward.toLocaleString()} </p>
+                                <p style="font-size: 14px; color: #999; margin-top: 15px;"> 報酬は約2週間後に獲得できます </p>
+                            </div>
+                            <button onclick="router.navigate('home')" class="btn btn-primary btn-block"> ホームに戻る </button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            // 質問詳細ページ
+            question: (id) => {
+                const question = db.questions.find(q => q.id === parseInt(id));
+                if (!question) return '<div>質問が見つかりません</div>';
+
+                const isMyQuestion = question.userId === app.currentUser?.id;
+                const isAnswering = question.answeredBy === app.currentUser?.id && question.status === 'reserved';
+                const canAnswer = !isMyQuestion && question.status === 'open' && !db.blockedQuestions[app.currentUser?.id]?.includes(question.id);
+
+                const timer = app.answerTimers[question.id];
+                const canCancelAnswer = timer && timerManager.canCancelAnswer(question.id);
+
+                return `
+                    <div>
+                        ${header()}
+                        <div class="container" style="padding: 30px 20px; max-width: 800px;">
+                            <div class="card" style="padding: 30px;">
+                                <h1 style="margin-bottom: 20px;">${question.title}</h1>
+                                
+                                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                                    <span class="genre-badge" style="position: static; background: var(--secondary); margin-right: 0;">${question.category}</span>
+                                    ${question.subCategory ? `<span class="genre-badge" style="position: static; background: #6c757d; margin-right: 0;">${question.subCategory}</span>` : ''}
+                                    ${question.detailCategory ? `<span class="genre-badge" style="position: static; background: #343a40; margin-right: 0;">${question.detailCategory}</span>` : ''}
+                                    <span class="${getStatusBadgeClass(question.status)}" style="position: static;">${getStatusText(question.status)}</span>
+                                    <span class="price" style="font-size: 18px; margin-left: auto;">¥${question.price.toLocaleString()}</span>
+                                </div>
+                                
+                                ${isAnswering ? `
+                                    <div class="alert alert-warning" style="margin-bottom: 20px; text-align: center;">
+                                        <strong>回答予約中:</strong> ${timerManager.getRemainingTime(question.id)}以内に回答を提出してください。
+                                        ${canCancelAnswer ? `<button onclick="timerManager.cancelAnswer(${question.id}, ${app.currentUser.id})" class="btn btn-danger" style="margin-left: 20px; padding: 5px 15px;">予約解除</button>` : ''}
+                                    </div>
+                                ` : ''}
+
+                                <p style="white-space: pre-wrap; margin-bottom: 20px; line-height: 1.8;">${question.description}</p>
+                                
+                                ${question.images && question.images.length > 0 ? `
+                                    <div class="image-preview" style="margin-bottom: 20px;">
+                                        ${question.images.map(img => `<img src="${img}" alt="質問画像" style="width: 150px; height: 150px; object-fit: cover; cursor: pointer;" onclick="openImageModal('${img}')">`).join('')}
+                                    </div>
+                                ` : ''}
+
+                                <div style="color: #999; font-size: 14px; border-top: 1px solid var(--border); padding-top: 15px;">
+                                    <span>投稿者: ${getUserName(question.userId)}</span>
+                                    <span style="margin-left: 15px;">投稿日時: ${new Date(question.createdAt).toLocaleDateString()}</span>
+                                    ${question.deadline ? `<span class="deadline-badge" style="position: static; margin-left: 15px; background: var(--danger);">期限: ${getDeadlineRemaining(question.deadline)}</span>` : ''}
+                                </div>
+                                
+                                ${isMyQuestion && question.status === 'open' ? `
+                                    <div style="margin-top: 20px;">
+                                        <button onclick="handleDeleteQuestion(${question.id})" class="btn btn-danger">質問を削除</button>
+                                    </div>
+                                ` : ''}
+                                
+                                ${canAnswer ? `
+                                    <div style="margin-top: 30px; border-top: 2px solid var(--primary); padding-top: 20px;">
+                                        ${checkPenaltyStatus(app.currentUser.id) === true ? `
+                                            <button onclick="openAnswerModal(${question.id}, ${question.price})" class="btn btn-primary btn-block">回答する</button>
+                                        ` : `
+                                            <div class="alert alert-danger" style="text-align: center;">
+                                                ${checkPenaltyStatus(app.currentUser.id)}
+                                            </div>
+                                        `}
+                                    </div>
+                                ` : ''}
+
+                                ${question.status === 'solved' ? `
+                                    <div style="margin-top: 30px; border-top: 2px solid var(--success); padding-top: 20px;">
+                                        <h3 style="margin-bottom: 15px; color: var(--success);">解決済みの回答</h3>
+                                        ${question.answers.map(a => answerCard(a, isMyQuestion)).join('')}
+                                    </div>
+                                ` : ''}
+
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            
+            // プロフィールページ
+            profile: (id) => {
+                const userId = id ? parseInt(id) : app.currentUser?.id;
+                const user = db.users.find(u => u.id === userId);
+                
+                if (!user) return `
+                    <div>
+                        ${header()}
+                        <div class="container" style="padding: 30px 20px;">
+                            <div class="alert alert-danger">ユーザーが見つかりません</div>
+                        </div>
+                    </div>
+                `;
+
+                const isMyProfile = user.id === app.currentUser?.id;
+                const myQuestions = db.questions.filter(q => q.userId === user.id);
+                const myAnswers = db.questions.flatMap(q => q.answers).filter(a => a.userId === user.id);
+                
+                return `
+                    <div>
+                        ${header()}
+                        <div class="container" style="padding: 30px 20px; max-width: 800px;">
+                            <div class="card" style="padding: 30px; text-align: center; margin-bottom: 30px;">
+                                <div class="user-avatar" style="width: 80px; height: 80px; font-size: 36px; margin: 0 auto 15px;">${user.name.charAt(0)}</div>
+                                <h1 style="margin-bottom: 10px;">${user.name}</h1>
+                                <p style="color: #666; margin-bottom: 20px;">${user.email}</p>
+                                
+                                <div style="display: flex; justify-content: space-around; border-top: 1px solid var(--border); padding-top: 20px;">
+                                    <div>
+                                        <p style="font-size: 14px; color: #999;">投稿質問数</p>
+                                        <p style="font-size: 24px; font-weight: bold; color: var(--primary);">${myQuestions.length}</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 14px; color: #999;">回答数</p>
+                                        <p style="font-size: 24px; font-weight: bold; color: var(--success);">${myAnswers.length}</p>
+                                    </div>
+                                </div>
+                                
+                                ${isMyProfile ? `
+                                    <div style="margin-top: 30px;">
+                                        <button onclick="handleLogout()" class="btn btn-secondary">ログアウト</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <h2 style="margin-bottom: 20px;">投稿した質問 (${myQuestions.length})</h2>
+                            ${myQuestions.length === 0 ? `<p style="color: #999;">質問はまだありません。</p>` : `
+                                <div class="grid">
+                                    ${myQuestions.map(q => questionCard(q)).join('')}
+                                </div>
+                            `}
+                            
+                            <h2 style="margin-top: 40px; margin-bottom: 20px;">回答した質問 (${myAnswers.length})</h2>
+                            ${myAnswers.length === 0 ? `<p style="color: #999;">回答はまだありません。</p>` : `
+                                <div class="grid">
+                                    ${myAnswers.map(a => {
+                                        const q = db.questions.find(q => q.id === a.questionId);
+                                        return q ? questionCard(q) : '';
+                                    }).join('')}
+                                </div>
+                            `}
+
+                        </div>
+                    </div>
+                `;
+            },
+            
+            // 404ページ
+            '404': () => `
+                <div style="text-align: center; padding: 100px 20px; min-height: 100vh; background: var(--bg);">
+                    <div style="font-size: 96px; margin-bottom: 20px;">🚫</div>
+                    <h1 style="font-size: 48px; margin-bottom: 10px;">404 Not Found</h1>
+                    <p style="font-size: 18px; color: #666; margin-bottom: 30px;">お探しのページは見つかりませんでした。</p>
+                    <button onclick="router.navigate('home')" class="btn btn-primary">ホームに戻る</button>
+                </div>
+            `
+        };
+
+        // ルーターとナビゲーション
+        const router = {
+            navigate(page, id = null) {
+                const hash = id ? `${page}/${id}` : page;
+                history.pushState(null, null, `#${hash}`);
+                this.render(page, id);
+            },
+            
+            render(page, id = null) {
+                app.currentPage = page;
+                app.currentQuestion = db.questions.find(q => q.id === parseInt(id));
+
+                const container = document.getElementById('app');
+                const pageFunction = pages[page] || pages['404'];
+                
+                // ページコンテンツの描画
+                container.innerHTML = pageFunction(id);
+                
+                // Googleサインインボタンの再描画 (loginページの場合)
+                if (page === 'login') {
+                    renderGoogleSignInButton();
+                }
+
+                // 質問投稿ページの場合、初期化
+                if (page === 'post') {
+                    initPostPage();
+                }
+                
+                // スクロールをトップに戻す
+                window.scrollTo(0, 0);
+            }
+        };
+
+        // コンポーネント関数
+        function header() {
+            const userAvatar = app.currentUser ? `<div class="user-avatar" onclick="router.navigate('profile')">${app.currentUser.name.charAt(0)}</div>` : `<button onclick="router.navigate('login')" class="btn btn-primary">ログイン</button>`;
+            
+            return `
+                <header class="header">
+                    <div class="container header-content">
+                        <a href="#" onclick="router.navigate('home'); return false;" class="logo">
+                            <div class="logo-image">😴</div>
+                            lazyum
+                        </a>
+                        <div class="search-container">
+                            <input type="text" id="searchInput" class="search-input" placeholder="質問を検索..." onkeyup="handleSearch(event)" value="${app.searchTerm}">
+                            <button class="search-btn" onclick="router.render('home')">🔍</button>
+                        </div>
+                        ${userAvatar}
+                    </div>
+                </header>
+            `;
+        }
+        
+        function questionCard(q) {
+            const userName = getUserName(q.userId);
+            const statusClass = getStatusBadgeClass(q.status);
+            const statusText = getStatusText(q.status);
+            const timerHtml = q.status === 'reserved' && app.answerTimers[q.id] ? `<span class="timer">${timerManager.getRemainingTime(q.id)}</span>` : '';
+            const isNewAnswer = checkNewAnswerForQuestion(q.id);
+
+            return `
+                <a href="#" onclick="router.navigate('question', ${q.id}); return false;" class="card" style="text-decoration: none; color: inherit;">
+                    <div class="card-image" style="background: url('${q.images && q.images.length > 0 ? q.images[0] : 'linear-gradient(135deg, var(--secondary), var(--accent))'}'); background-size: cover; background-position: center; ${q.images && q.images.length > 0 ? '' : 'font-size: 0;' /* 画像がない場合はアイコンを非表示 */ }">
+                        <span class="genre-badge">${q.category}</span>
+                        <span class="${statusClass}">${statusText}</span>
+                        ${q.deadline && q.status === 'open' ? `<span class="deadline-badge">期限: ${getDeadlineRemaining(q.deadline)}</span>` : ''}
+                        ${isNewAnswer ? `<div class="status-badge" style="top: 40px; right: 10px; background: var(--primary); color: white;">新着回答</div>` : ''}
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${q.title}</h3>
+                        <div class="card-meta">
+                            <div class="price">¥${q.price.toLocaleString()}</div>
+                            <div style="font-size: 12px; color: #999;">${userName} ${timerHtml}</div>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+        
+        function answerCard(a, isMyQuestion) {
+            const userName = getUserName(a.userId);
+            
+            return `
+                <div class="card" style="margin-bottom: 20px; ${a.isAccepted ? 'border: 3px solid var(--success);' : ''}">
+                    <div style="padding: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-weight: bold; color: var(--text);">${userName}</span>
+                            <span style="font-size: 12px; color: #999;">${new Date(a.answeredAt).toLocaleDateString()}</span>
+                        </div>
+                        
+                        <p style="white-space: pre-wrap; margin-bottom: 15px; line-height: 1.6;">${a.description}</p>
+                        
+                        ${a.images && a.images.length > 0 ? `
+                            <div class="image-preview" style="margin-bottom: 15px;">
+                                ${a.images.map(img => `<img src="${img}" alt="回答画像" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" onclick="openImageModal('${img}')">`).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${a.isAccepted ? `
+                            <div class="alert alert-success" style="padding: 10px; text-align: center;">✅ 採用された回答です</div>
+                        ` : ''}
+
+                        ${isMyQuestion && !a.isAccepted ? `
+                            <div style="text-align: right; margin-top: 10px;">
+                                <button onclick="handleAcceptAnswer(${a.questionId}, ${a.id})" class="btn btn-success" style="padding: 8px 16px;">この回答を採用する</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function checkAccountStatus() {
+            const status = penaltyManager.checkPenalty(app.currentUser.id);
+            if (!status.canAnswer) {
+                return `
+                    <div class="container" style="margin-top: 20px;">
+                        <div class="alert alert-danger" style="text-align: center;">
+                            ⚠️ **アカウントステータス警告:** ${status.reason}
+                        </div>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        // ユーティリティ
+        function getUserName(id) {
+            const user = db.users.find(u => u.id === id);
+            return user ? user.name : '不明なユーザー';
+        }
+        
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'open': return 'status-badge status-open';
+                case 'reserved': return 'status-badge status-reserved';
+                case 'solved': return 'status-badge status-solved';
+                default: return 'status-badge';
+            }
+        }
+        
+        function getStatusText(status) {
+            switch (status) {
+                case 'open': return '募集中';
+                case 'reserved': return '回答予約中';
+                case 'solved': return '解決済み';
+                default: return '不明';
+            }
+        }
+
+        function getDeadlineRemaining(deadline) {
+            const diff = new Date(deadline) - new Date();
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            if (diff <= 0) return '期限切れ';
+            if (days > 0) return `残り${days}日`;
+            return `残り${hours}時間`;
+        }
+        
+        function checkPenaltyStatus(userId) {
+            const status = penaltyManager.checkPenalty(userId);
+            if (status.canAnswer) return true;
+            return status.reason;
+        }
+
+        // データ操作
+        function getFilteredQuestions() {
+            let questions = db.questions.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            if (app.showOnlyOpen) {
+                questions = questions.filter(q => q.status === 'open');
+            }
+            
+            if (app.searchTerm) {
+                const term = app.searchTerm.toLowerCase();
+                questions = questions.filter(q => 
+                    q.title.toLowerCase().includes(term) ||
+                    q.description.toLowerCase().includes(term) ||
+                    q.category.toLowerCase().includes(term)
+                );
+            }
+            
+            return questions;
+        }
+        
+        function checkAndRemoveExpiredQuestions() {
+            const now = new Date();
+            const initialCount = db.questions.length;
+            
+            db.questions = db.questions.filter(q => 
+                !q.deadline || new Date(q.deadline) > now
+            );
+            
+            if (db.questions.length !== initialCount) {
+                db.saveQuestions();
+            }
+        }
+
+        // 新着回答通知
+        function checkNewAnswers() {
+            if (!app.currentUser) return [];
+            
+            // 自分が投稿した質問の中で、未読の回答を持つものを抽出
+            return db.questions.filter(q => 
+                q.userId === app.currentUser.id && // 自分の質問
+                q.answers && q.answers.length > 0 && // 回答がある
+                q.answers.some(a => !app.viewedAnswers.includes(a.id)) // 未読の回答がある
+            );
+        }
+
+        function checkNewAnswerForQuestion(questionId) {
+             if (!app.currentUser) return false;
+             
+             const question = db.questions.find(q => q.id === questionId);
+             if (!question || question.userId !== app.currentUser.id || !question.answers) return false;
+
+             return question.answers.some(a => !app.viewedAnswers.includes(a.id));
+        }
+
+        // イベントハンドラ
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const user = db.users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                app.currentUser = user;
+                db.saveCurrentUser(user);
+                router.navigate('home');
+            } else {
+                alert('メールアドレスまたはパスワードが違います。');
+            }
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            if (db.users.some(u => u.email === email)) {
+                alert('このメールアドレスは既に登録されています。');
+                return;
+            }
+            
+            const newUser = {
+                id: db.users.length > 0 ? Math.max(...db.users.map(u => u.id)) + 1 : 1,
+                name: name,
+                email: email,
+                password: password,
+                googleId: null,
+                createdAt: new Date().toISOString()
+            };
+            
+            db.users.push(newUser);
+            db.saveUsers();
+            
+            app.currentUser = newUser;
+            db.saveCurrentUser(newUser);
+            alert('登録が完了しました！');
+            router.navigate('home');
+        }
+
+        function handleLogout() {
+            if (confirm('ログアウトしますか？')) {
+                app.currentUser = null;
+                db.saveCurrentUser(null);
+                // Google Sign-Out
+                const googleAuth = typeof google !== 'undefined' ? google.accounts.id : null;
+                if (googleAuth) {
+                    googleAuth.disableAutoSelect();
+                    // 必要に応じてログアウト処理を追記
+                }
+                router.navigate('login');
+            }
+        }
+
+        function handleGoogleCredentialResponse(response) {
+            // Google One Tap または Sign-In Buttonからのコールバック
+            if (response.credential) {
+                // 認証情報をデコードしてユーザー情報を取得（ここでは省略）
+                const testUser = db.users.find(u => u.googleId);
+                
+                if (testUser) {
+                    app.currentUser = testUser;
+                    db.saveCurrentUser(testUser);
+                    router.navigate('home');
+                } else {
+                    // 新規登録処理（ここでは簡易的に既存テストユーザーで代用）
+                    alert('Google認証成功 (テストユーザーでログイン)');
+                    app.currentUser = db.users.find(u => u.id === 1);
+                    db.saveCurrentUser(app.currentUser);
+                    router.navigate('home');
+                }
+            }
+        }
+
+        function renderGoogleSignInButton() {
+            const buttonDiv = document.getElementById('googleSignInButton');
+            if (buttonDiv && typeof google !== 'undefined' && google.accounts.id) {
+                google.accounts.id.initialize({
+                    client_id: "YOUR_CLIENT_ID.apps.googleusercontent.com", // 実際のクライアントIDに置き換えてください
+                    callback: handleGoogleCredentialResponse,
+                });
+
+                google.accounts.id.renderButton(
+                    buttonDiv,
+                    { type: "standard", theme: "outline", size: "large", width: "360" } 
+                );
+            }
+        }
+        
+        function handleSearch(e) {
+            app.searchTerm = e.target.value;
+            router.render('home');
+        }
+        
+        function loadMoreQuestions() {
+            app.displayedQuestions += 100;
+            router.render('home');
+        }
+        
+        function toggleOnlyOpen() {
+            app.showOnlyOpen = document.getElementById('showOnlyOpen').checked;
+            router.render('home');
+        }
+
+        // 画像処理（投稿）
+        function handleImageSelect(e) {
+            const files = e.target.files;
+            const maxFiles = 5;
+            const newImages = [...app.selectedImages];
+
+            for (let i = 0; i < files.length && newImages.length < maxFiles; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    if (newImages.length < maxFiles) {
+                        newImages.push(event.target.result);
+                        app.selectedImages = newImages;
+                        renderImagePreview();
+                        checkFormCompletion();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            // ファイル選択をリセットして、同じファイルを再度選択できるようにする
+            e.target.value = '';
+        }
+
+        function renderImagePreview() {
+            const previewDiv = document.getElementById('imagePreview');
+            if (previewDiv) {
+                previewDiv.innerHTML = app.selectedImages.map((img, index) => `
+                    <div style="position: relative;">
+                        <img src="${img}" alt="Preview ${index}" />
+                        <span class="remove-image" onclick="removeImage(${index})">&times;</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function removeImage(index) {
+            app.selectedImages.splice(index, 1);
+            renderImagePreview();
+            checkFormCompletion();
+        }
+        
+        // 画像処理（回答）
+        function handleAnswerImageSelect(e) {
+            const files = e.target.files;
+            const maxFiles = 3;
+            const newImages = [...app.answerImages];
+
+            for (let i = 0; i < files.length && newImages.length < maxFiles; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    if (newImages.length < maxFiles) {
+                        newImages.push(event.target.result);
+                        app.answerImages = newImages;
+                        renderAnswerImagePreview();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            e.target.value = '';
+        }
+
+        function renderAnswerImagePreview() {
+            const previewDiv = document.getElementById('answerImagePreview');
+            if (previewDiv) {
+                previewDiv.innerHTML = app.answerImages.map((img, index) => `
+                    <div style="position: relative;">
+                        <img src="${img}" alt="Preview ${index}" />
+                        <span class="remove-image" onclick="removeAnswerImage(${index})">&times;</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function removeAnswerImage(index) {
+            app.answerImages.splice(index, 1);
+            renderAnswerImagePreview();
+        }
+        
+        // モーダル
+        function openImageModal(src) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = src;
+            modal.classList.add('show');
+            // 背景スクロール禁止
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('show');
+            // 背景スクロール許可
+            document.body.style.overflow = '';
+        }
+
+        function openAnswerModal(questionId, price) {
+            if (!app.currentUser) {
+                alert('回答するにはログインが必要です。');
+                router.navigate('login');
+                return;
+            }
+
+            if (!checkPenaltyStatus(app.currentUser.id)) return;
+
+            // 回答予約処理
+            const question = db.questions.find(q => q.id === questionId);
+            if (question.status !== 'open') {
+                alert('この質問は現在募集中ではありません。');
+                router.render('question', questionId);
+                return;
+            }
+            
+            question.status = 'reserved';
+            question.answeredBy = app.currentUser.id;
+            db.saveQuestions();
+            
+            // 2時間タイマー開始
+            timerManager.startTimer(questionId, app.currentUser.id);
+
+            app.currentAnsweringQuestion = questionId;
+            app.answerImages = [];
+            renderAnswerImagePreview();
+            document.getElementById('answerDescription').value = '';
+            
+            const modal = document.getElementById('answerModal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+
+            // 質問詳細ページを再描画して状態を更新
+            router.render('question', questionId);
+        }
+
+        function closeAnswerModal() {
+            const modal = document.getElementById('answerModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function handleAnswerSubmit(e) {
+            e.preventDefault();
+            const description = document.getElementById('answerDescription').value.trim();
+            
+            if (app.answerImages.length === 0 && description === '') {
+                alert('写真または説明文の少なくとも1つは必須です。');
+                return;
+            }
+            
+            const questionId = app.currentAnsweringQuestion;
+            const question = db.questions.find(q => q.id === questionId);
+
+            if (!question || question.answeredBy !== app.currentUser.id || question.status !== 'reserved') {
+                alert('回答権がありません。');
+                closeAnswerModal();
+                router.render('question', questionId);
+                return;
+            }
+
+            const newAnswer = {
+                id: question.answers.length > 0 ? Math.max(...question.answers.map(a => a.id)) + 1 : 1,
+                userId: app.currentUser.id,
+                description: description,
+                images: app.answerImages.slice(),
+                answeredAt: new Date().toISOString(),
+                isAccepted: false,
+                questionId: questionId
+            };
+
+            question.answers.push(newAnswer);
+            // 質問ステータスはそのまま (reserved)
+            db.saveQuestions();
+            
+            // タイマーを削除
+            delete app.answerTimers[questionId];
+            
+            alert('回答を提出しました！質問者が採用するまでお待ちください。');
+            closeAnswerModal();
+            router.navigate('question', questionId); // 回答詳細にリダイレクト
+        }
+        
+        function handleAcceptAnswer(questionId, answerId) {
+            const question = db.questions.find(q => q.id === questionId);
+            if (!question || question.userId !== app.currentUser.id || question.status === 'solved') {
+                alert('この質問を採用することはできません。');
+                return;
+            }
+            
+            if (confirm('この回答を採用し、質問を解決済みにしますか？\n採用後はやり直しできません。')) {
+                const answer = question.answers.find(a => a.id === answerId);
+                if (answer) {
+                    answer.isAccepted = true;
+                    question.status = 'solved';
+                    
+                    // タイマーがあれば削除
+                    delete app.answerTimers[questionId];
+                    
+                    // 報酬計算（ダミー）
+                    // 実際にはバックエンドで決済処理を行い、PayPayに払い出しAPIを呼び出す
+                    const reward = Math.floor(question.price * 0.9); 
+                    
+                    db.saveQuestions();
+                    alert(`回答を採用しました！回答者（${getUserName(answer.userId)}）に報酬¥${reward.toLocaleString()}が付与されます。`);
+                    router.navigate('question', questionId);
+                }
+            }
+        }
+
+        function handleDeleteQuestion(questionId) {
+            const questionIndex = db.questions.findIndex(q => q.id === questionId);
+            
+            if (questionIndex !== -1 && db.questions[questionIndex].userId === app.currentUser.id) {
+                if (confirm('本当にこの質問を削除しますか？')) {
+                    db.questions.splice(questionIndex, 1);
+                    db.saveQuestions();
+                    alert('質問を削除しました。');
+                    router.navigate('home');
+                }
+            }
+        }
+        
+        function viewNewAnswers() {
+            // 新着回答のある質問ページにリダイレクトするか、まとめて既読にするなどの処理
+            const newAnswers = checkNewAnswers();
+            const answerIds = newAnswers.flatMap(q => q.answers).map(a => a.id);
+            
+            // 全て既読にする
+            app.viewedAnswers = [...new Set([...app.viewedAnswers, ...answerIds])];
+            localStorage.setItem('lazyum_viewed_answers', JSON.stringify(app.viewedAnswers));
+
+            if (newAnswers.length > 0) {
+                 // 最初の質問にリダイレクト
+                router.navigate('question', newAnswers[0].id);
+            } else {
+                router.render('home');
+            }
+        }
+
+        // 投稿ページ専用ロジック
+        const categoryMap = {
+            '社会人': ['仕事', '転職', '資格'],
+            '大学生': ['学業', '就活', 'サークル'],
+            '高校生': ['受験', '進路', '部活'],
+            '中学生': ['勉強', '友人', '習い事'],
+            '小学生': ['宿題', '遊び', '学校'],
+            'その他': ['趣味', '生活', '雑談']
+        };
+
+        const subCategoryMap = {
+            '仕事': ['プログラミング', 'デザイン', '営業'],
+            '学業': ['数学', '英語', 'レポート'],
+            '受験': ['共通テスト', '二次試験', '推薦'],
+            '勉強': ['国語', '理科', '社会'],
+            '宿題': ['漢字', '計算', '自由研究'],
+            '趣味': ['料理', 'スポーツ', 'ゲーム']
+        };
+
+        function initPostPage() {
+            updateSubCategory();
+            updateRewardDisplay();
+        }
+
+        function updateSubCategory() {
+            const mainCategory = document.getElementById('postCategory').value;
+            const subCategorySelect = document.getElementById('postSubCategory');
+            const subCategoryGroup = document.getElementById('subCategoryGroup');
+            
+            subCategorySelect.innerHTML = '<option value="">選択してください</option>';
+            subCategoryGroup.style.display = 'none';
+            
+            if (mainCategory && categoryMap[mainCategory]) {
+                const subCategories = categoryMap[mainCategory];
+                subCategories.forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    subCategorySelect.appendChild(option);
+                });
+                subCategoryGroup.style.display = 'block';
+            }
+            
+            updateDetailCategory();
+        }
+
+        function updateDetailCategory() {
+            const subCategory = document.getElementById('postSubCategory').value;
+            const detailCategorySelect = document.getElementById('postDetailCategory');
+            const detailCategoryGroup = document.getElementById('detailCategoryGroup');
+
+            detailCategorySelect.innerHTML = '<option value="">選択してください</option>';
+            detailCategoryGroup.style.display = 'none';
+
+            if (subCategory && subCategoryMap[subCategory]) {
+                const detailCategories = subCategoryMap[subCategory];
+                detailCategories.forEach(detail => {
+                    const option = document.createElement('option');
+                    option.value = detail;
+                    option.textContent = detail;
+                    detailCategorySelect.appendChild(option);
+                });
+                detailCategoryGroup.style.display = 'block';
+            }
+            checkFormCompletion();
+        }
+        
+        function updateRewardDisplay() {
+            const priceInput = document.getElementById('postPrice');
+            const rewardDiv = document.getElementById('rewardDisplay');
+            const price = parseInt(priceInput.value, 10);
+            
+            if (price >= 100) {
+                const commissionRate = 0.1; // 10%
+                const commission = Math.floor(price * commissionRate);
+                const actualReward = price - commission;
+                
+                rewardDiv.innerHTML = `
+                    決済金額: ¥${price.toLocaleString()} <br>
+                    手数料 (10%): -¥${commission.toLocaleString()} <br>
+                    **回答者への報酬:** **¥${actualReward.toLocaleString()}**
+                `;
+                rewardDiv.style.display = 'block';
+            } else {
+                rewardDiv.style.display = 'none';
+            }
+        }
+        
+        function checkFormCompletion() {
+            const title = document.getElementById('postTitle')?.value;
+            const description = document.getElementById('postDescription')?.value;
+            const category = document.getElementById('postCategory')?.value;
+            const price = parseInt(document.getElementById('postPrice')?.value, 10);
+            
+            updateRewardDisplay();
+
+            let isComplete = !!title && !!description && !!category && price >= 100;
+            
+            // サブカテゴリーが展開されている場合、その選択も必須
+            const subCategoryGroup = document.getElementById('subCategoryGroup');
+            if (subCategoryGroup && subCategoryGroup.style.display !== 'none') {
+                const subCategory = document.getElementById('postSubCategory')?.value;
+                isComplete = isComplete && !!subCategory;
+            }
+            
+            // 詳細カテゴリーが展開されている場合、その選択も必須
+            const detailCategoryGroup = document.getElementById('detailCategoryGroup');
+            if (detailCategoryGroup && detailCategoryGroup.style.display !== 'none') {
+                 const detailCategory = document.getElementById('postDetailCategory')?.value;
+                 isComplete = isComplete && !!detailCategory;
+            }
+            
+            const warningDiv = document.getElementById('incompleteWarning');
+            const payButton = document.getElementById('payButton');
+
+            if (warningDiv && payButton) {
+                if (isComplete) {
+                    warningDiv.style.display = 'none';
+                    payButton.disabled = false;
+                } else {
+                    warningDiv.style.display = 'block';
+                    payButton.disabled = true;
+                }
+            }
+        }
+        
+        // 💡 修正: PayPay決済処理を投稿フォームに統合
+        async function initiatePayPay() {
+            const payButton = document.getElementById('payButton');
+            const paymentMessage = document.getElementById('paymentMessage');
+            
+            // フォームの入力値を取得
+            const amount = parseInt(document.getElementById('postPrice').value, 10);
+
+            if (payButton.disabled || isNaN(amount) || amount < 100) {
+                 paymentMessage.textContent = '入力内容を確認してください。';
+                 paymentMessage.style.color = 'red';
+                 return;
+            }
+            
+            paymentMessage.textContent = '決済処理を開始しています...';
+            paymentMessage.style.color = 'blue';
+            payButton.disabled = true;
+
+            // 質問データを一時保存 (決済成功後の投稿処理で使用)
+            const newQuestionData = {
+                title: document.getElementById('postTitle').value,
+                description: document.getElementById('postDescription').value,
+                category: document.getElementById('postCategory').value,
+                subCategory: document.getElementById('postSubCategory').value || null,
+                detailCategory: document.getElementById('postDetailCategory').value || null,
+                price: amount,
+                deadline: document.getElementById('postDeadline').value || null,
+                images: app.selectedImages.slice(),
+                userId: app.currentUser.id,
+                answers: []
+            };
+            sessionStorage.setItem('pending_question_data', JSON.stringify(newQuestionData));
+            
+            try {
+                // Netlify Function (create-payment.js) を呼び出す
+                const response = await fetch('/.netlify/functions/create-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // 金額を Netlify Function に送信
+                    body: JSON.stringify({ amount: amount }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success && result.result && result.result.data && result.result.data.webLink) {
+                    // 成功: PayPayの決済画面URLを取得し、リダイレクト
+                    paymentMessage.textContent = 'PayPay決済画面へ移動します...';
+                    window.location.href = result.result.data.webLink;
+                } else {
+                    // 失敗: エラーメッセージを表示
+                    const errorMsg = result.result?.resultInfo?.message || result.message || '不明なエラー';
+                    paymentMessage.textContent = `決済作成に失敗しました: ${errorMsg}`;
+                    paymentMessage.style.color = 'red';
+                    console.error('Payment creation failed:', result);
+                    payButton.disabled = false; // エラー時はボタンを再有効化
+                }
+            } catch (error) {
+                paymentMessage.textContent = 'サーバーとの通信に失敗しました。ネットワーク接続を確認してください。';
+                paymentMessage.style.color = 'red';
+                console.error('Fetch error:', error);
+                payButton.disabled = false; // エラー時はボタンを再有効化
+            }
+        }
+
+        // 決済成功後の処理（実際にはcomplete.htmlで行うべきだが、ここではダミー）
+        function handlePost(e) {
+            e.preventDefault();
+            // initiatePayPay()にロジックを移動したため、この関数は基本使わない。
+            // 念のため、バグ防止のためロジックを空にする。
+            return false;
+        }
+        
+        // データの初期化とルーティング
+        function initializeApp() {
+            // テストデータ
+            if (db.users.length === 0) {
+                db.users.push({
+                    id: 1,
+                    name: 'テストユーザー',
+                    email: 'test@test.com',
+                    password: 'password',
+                    googleId: null,
+                    createdAt: new Date().toISOString()
+                });
+                db.saveUsers();
+            }
+            
+            app.currentUser = db.getCurrentUser();
+            
+            // URLハッシュに基づいてルーティング
+            const hash = location.hash.slice(1) || (app.currentUser ? 'home' : 'login');
+            
+            // ハッシュをパースしてページとIDを取得
+            const [page, id] = hash.split('/');
+            
+            if (page) {
+                // 💡 決済完了後の投稿処理 (URLからクエリパラメータをチェック)
+                if (page === 'post-complete') {
+                    handlePaymentSuccess();
+                } else {
+                    router.render(page, id);
+                }
+            } else {
+                router.render(app.currentUser ? 'home' : 'login');
+            }
+        }
+
+        function handlePaymentSuccess() {
+            // 実際はcomplete.htmlで行う処理のダミー
+            const pendingData = sessionStorage.getItem('pending_question_data');
+            sessionStorage.removeItem('pending_question_data');
+
+            if (!pendingData) {
+                alert('決済データが見つかりません。投稿はキャンセルされました。');
+                router.navigate('post');
+                return;
+            }
+
+            const newQuestionData = JSON.parse(pendingData);
+            
+            // 新しい質問IDを採番
+            const newId = db.questions.length > 0 ? Math.max(...db.questions.map(q => q.id)) + 1 : 1;
+            
+            const newQuestion = {
+                id: newId,
+                title: newQuestionData.title,
+                description: newQuestionData.description,
+                category: newQuestionData.category,
+                subCategory: newQuestionData.subCategory,
+                detailCategory: newQuestionData.detailCategory,
+                price: newQuestionData.price,
+                deadline: newQuestionData.deadline,
+                images: newQuestionData.images,
+                userId: app.currentUser.id,
+                status: 'open',
+                answers: [],
+                createdAt: new Date().toISOString()
+            };
+            
+            db.questions.push(newQuestion);
+            db.saveQuestions();
+            
+            alert('決済が完了し、質問が投稿されました！');
+            router.navigate('question', newId);
+        }
+
+        // 初期化
+        window.onload = function() {
+            initializeApp();
+            
+            // タイマー監視
+            setInterval(() => {
+                // home または question ページにいる場合のみ更新
+                if (app.currentPage === 'home' || (app.currentPage === 'question' && app.currentQuestion)) {
+                    // 全てのタイマーを再確認し、表示を更新（ただしDOM要素の取得はrouter.renderで実行）
+                    router.render(app.currentPage, app.currentQuestion?.id);
+                } else if (app.currentPage === 'question') {
+                    // questionページだが、問題データがない場合は、タイマー更新を試みる
+                    const timer = document.querySelector('.timer');
+                    if (timer) {
+                        const questionId = app.currentQuestion?.id;
+                        if (questionId && app.answerTimers[questionId]) {
+                             timer.textContent = timerManager.getRemainingTime(questionId);
+                        }
+                    }
+                }
+            }, 1000);
+        };
+
+        // ブラウザの戻る/進むボタン対応
+        if (window.location.protocol !== 'about:') {
+            window.addEventListener('popstate', function() {
+                const hash = location.hash.slice(1) || (app.currentUser ? 'home' : 'login');
+                const [page, id] = hash.split('/');
+                router.render(page, id);
+            });
+        }
+    </script>
+</body>
+</html>
